@@ -50,6 +50,8 @@ module.exports = (sequelize, DataTypes) => {
     zip_code: {
       type: DataTypes.INTEGER
     }
+  }, {
+    timestamps: false
   })
   return Patron
 }

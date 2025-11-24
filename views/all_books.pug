@@ -1,0 +1,43 @@
+extends layout
+
+block content
+  h1 Books
+  div.create-search-container
+    a.button(href='/books/new') Create New Book
+    form(method='get')
+      input(type='search', id='search', name='search', placeholder='Search...')
+      button(type='submit', class='search-btn') Search
+  table
+    thead
+      tr
+        th Title
+        th Author
+        th Genre
+        th Year Released
+    tbody
+      if books && books.length > 0
+        each book in books
+          tr
+            td
+              a(href=`/books/${book.id}`)= book.title
+            td= book.author
+            td= book.genre || ''
+            td= book.first_published || ''
+      else
+        tr
+          td(colspan='4') No books found.
+  if pagination && pagination.totalPages > 1
+    nav.pagination
+      ul
+        if pagination.currentPage > 1
+          li
+            a(href=`?page=${pagination.currentPage - 1}${pagination.searchQuery ? '&search=' + pagination.searchQuery : ''}`) Previous
+        - let page = 1
+        while page <= pagination.totalPages
+          li(class=page === pagination.currentPage ? 'active' : '')
+            a(href=`?page=${page}${pagination.searchQuery ? '&search=' + pagination.searchQuery : ''}`)= page
+          - page++
+        if pagination.currentPage < pagination.totalPages
+          li
+            a(href=`?page=${pagination.currentPage + 1}${pagination.searchQuery ? '&search=' + pagination.searchQuery : ''}`) Next
+

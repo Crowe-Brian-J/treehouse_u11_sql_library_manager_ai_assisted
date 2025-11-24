@@ -12,7 +12,7 @@
 _List all the AI tools you utilized to complete the project._
 
 - GitHub Copilot
-- _(AI Tool Two)_
+- Cursor
 - _(AI Tool Three)_
 
 ---
@@ -22,7 +22,7 @@ _List all the AI tools you utilized to complete the project._
 _Describe what parts of the project went smoothly or turned out well. This could include specific features, code organization, approaches to prompts or workflow habits._
 
 - _(What Worked 1)_
-- _(What Worked 2)_
+- Cursor followed the layout and home page to the letter.
 - _(What Worked 3)_
 
 ---
