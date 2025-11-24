@@ -40,18 +40,23 @@ app.use('/users', usersRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404))
+  const err = new Error('Page Not Found')
+  err.status = 404
+  next(err)
 })
 
 // error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message
-  res.locals.error = req.app.get('env') === 'development' ? err : {}
+  // Set default status and message if not defined
+  if (!err.status) err.status = 500
+  if (!err.message) err.message = 'Something went wrong.'
 
-  // render the error page
-  res.status(err.status || 500)
-  res.render('error')
+  // Log error status and message
+  console.error(`Error Status: ${err.status}, Message: ${err.message}`)
+
+  // Render the error page, passing the error object
+  res.status(err.status)
+  res.render('error', { err })
 })
 
 module.exports = app
