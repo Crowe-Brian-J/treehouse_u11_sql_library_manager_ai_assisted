@@ -1,0 +1,55 @@
+extends layout
+
+block content
+  h1 New Patron
+  
+  if errors && errors.length > 0
+    h2.error Oops! There was an error.
+    ul.error
+      each error in errors
+        li= error.message
+  
+  form(method='post', action='/patrons/new', novalidate)
+    p
+      label(for='first_name') First Name
+      input#first_name(
+        type='text',
+        name='first_name',
+        value=patron ? patron.first_name : '',
+        class=errors && errors.some(e => e.path === 'first_name') ? 'error' : ''
+      )
+    p
+      label(for='last_name') Last Name
+      input#last_name(
+        type='text',
+        name='last_name',
+        value=patron ? patron.last_name : '',
+        class=errors && errors.some(e => e.path === 'last_name') ? 'error' : ''
+      )
+    p
+      label(for='address') Address
+      input#address(
+        type='text',
+        name='address',
+        value=patron ? patron.address : '',
+        class=errors && errors.some(e => e.path === 'address') ? 'error' : ''
+      )
+    p
+      label(for='email') Email
+      input#email(
+        type='email',
+        name='email',
+        value=patron ? patron.email : '',
+        class=errors && errors.some(e => e.path === 'email') ? 'error' : ''
+      )
+    p
+      label(for='zip_code') Zip Code
+      input#zip_code(
+        type='text',
+        name='zip_code',
+        value=patron ? patron.zip_code : '',
+        class=errors && errors.some(e => e.path === 'zip_code') ? 'error' : ''
+      )
+    p
+      input.button(type='submit', value='Create New Patron')
+      a.button.cancel(href='/patrons') Cancel

@@ -13,7 +13,7 @@ _List all the AI tools you utilized to complete the project._
 
 - GitHub Copilot
 - Cursor
-- _(AI Tool Three)_
+- Windsurf
 
 ---
 
@@ -22,7 +22,7 @@ _List all the AI tools you utilized to complete the project._
 _Describe what parts of the project went smoothly or turned out well. This could include specific features, code organization, approaches to prompts or workflow habits._
 
 - _(What Worked 1)_
-- Cursor followed the layout and home page to the letter.
+- Cursor followed the layout and home page to the letter. When we encountered an error in the Book model not using a createdAt property, it also fixed the Patron model.
 - _(What Worked 3)_
 
 ---
@@ -33,7 +33,7 @@ _Explain what parts of the project were challenging or didn't go as planned. Did
 
 - _(What Didn't Work 1)_
 - _(What Didn't Work 2)_
-- _(What Didn't Work 3)_
+- Windsurf kept attempting to change the database schema in unexpected ways, sometimes suggesting changes that weren't aligned with the project requirements. It also tried to enforce conventions that didn't match the project's existing patterns. It also chose to add multiple form instructions in ways that did not make sense for the project's existing structure.
 
 ---
 
