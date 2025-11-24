@@ -1,0 +1,76 @@
+extends layout
+
+block content
+  h1 Patron: #{patron.first_name} #{patron.last_name}
+  
+  if errors && errors.length > 0
+    h2.error Oooops!
+    ul.error
+      each error in errors
+        li= error.message
+  
+  form(method='post', action=`/patrons/${patron.id}`)
+    p
+      label(for='first_name') First Name
+      input#first_name(
+        type='text',
+        name='first_name',
+        value=patron.first_name,
+        class=errors && errors.some(e => e.path === 'first_name') ? 'error' : ''
+      )
+    p
+      label(for='last_name') Last Name
+      input#last_name(
+        type='text',
+        name='last_name',
+        value=patron.last_name,
+        class=errors && errors.some(e => e.path === 'last_name') ? 'error' : ''
+      )
+    p
+      label(for='address') Address
+      input#address(
+        type='text',
+        name='address',
+        value=patron.address || '',
+        class=errors && errors.some(e => e.path === 'address') ? 'error' : ''
+      )
+    p
+      label(for='email') Email
+      input#email(
+        type='email',
+        name='email',
+        value=patron.email,
+        class=errors && errors.some(e => e.path === 'email') ? 'error' : ''
+      )
+    p
+      label(for='zip_code') Zip Code
+      input#zip_code(
+        type='text',
+        name='zip_code',
+        value=patron.zip_code || '',
+        class=errors && errors.some(e => e.path === 'zip_code') ? 'error' : ''
+      )
+    p
+      input(type='submit', value='Update')
+
+  //- Loan history section can be added here later
+  //- h2 Loan History
+  //- table
+  //-   thead
+  //-     tr
+  //-       th Book
+  //-       th Loaned On
+  //-       th Return By
+  //-       th Returned On
+  //-       th Action
+  //-   tbody
+  //-     each loan in patron.Loans
+  //-       tr
+  //-         td
+  //-           a(href=`/books/${loan.Book.id}`)= loan.Book.title
+  //-         td= loan.loaned_on
+  //-         td= loan.return_by
+  //-         td= loan.returned_on || 'Not returned'
+  //-         td
+  //-           if !loan.returned_on
+  //-             a.button(href=`/loans/${loan.id}/return`) Return Book

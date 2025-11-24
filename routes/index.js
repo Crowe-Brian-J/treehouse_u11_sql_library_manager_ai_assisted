@@ -70,6 +70,82 @@ router.post('/patrons/new', async function (req, res, next) {
   }
 })
 
+/* GET patron edit form */
+router.get('/patrons/:id', async function (req, res, next) {
+  try {
+    const patron = await Patron.findByPk(req.params.id)
+
+    if (!patron) {
+      const error = new Error('Patron not found')
+      error.status = 404
+      return next(error)
+    }
+
+    res.render('update_patron', {
+      patron: patron,
+      title: `Patron: ${patron.first_name} ${patron.last_name}`,
+      errors: []
+    })
+  } catch (error) {
+    console.error('Error fetching patron:', error)
+    next(error)
+  }
+})
+
+/* POST/PUT update patron */
+router.post('/patrons/:id', async function (req, res, next) {
+  try {
+    const patron = await Patron.findByPk(req.params.id)
+
+    if (!patron) {
+      const error = new Error('Patron not found')
+      error.status = 404
+      return next(error)
+    }
+
+    await patron.update({
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      address: req.body.address || null,
+      email: req.body.email,
+      zip_code: req.body.zip_code || null
+    })
+
+    res.redirect('/patrons')
+  } catch (error) {
+    console.error('Error updating patron:', error)
+
+    if (
+      error.name === 'SequelizeValidationError' ||
+      error.name === 'SequelizeUniqueConstraintError'
+    ) {
+      // Format errors for display
+      const fieldErrors = {}
+      error.errors.forEach((err) => {
+        if (!fieldErrors[err.path]) {
+          fieldErrors[err.path] = err.message
+        }
+      })
+
+      // Convert to array format expected by the template
+      const errorMessages = Object.keys(fieldErrors).map((path) => ({
+        message: fieldErrors[path],
+        path: path
+      }))
+
+      return res.render('update_patron', {
+        patron: { ...req.body, id: req.params.id },
+        errors: errorMessages,
+        title: `Update Patron: ${req.body.first_name || ''} ${
+          req.body.last_name || ''
+        }`
+      })
+    }
+
+    next(error)
+  }
+})
+
 /* GET all patrons */
 router.get('/patrons', async function (req, res, next) {
   try {

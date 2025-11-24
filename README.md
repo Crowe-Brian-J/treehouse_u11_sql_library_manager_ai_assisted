@@ -23,7 +23,7 @@ _Describe what parts of the project went smoothly or turned out well. This could
 
 - _(What Worked 1)_
 - Cursor followed the layout and home page to the letter. When we encountered an error in the Book model not using a createdAt property, it also fixed the Patron model.
-- _(What Worked 3)_
+- I intentionally gave a prompt before I was finished entering the explicit instructions on the Patron Detail Route. Windsurf noticed the error, and used the previous patterns of instructions to decide how to best implement the route. It even reasoned that the correct example-markup would be the update_patron.html file when it couldn't find one named 'patron_detail.html'.
 
 ---
 
@@ -51,6 +51,6 @@ _What were the benefits of using an AI assistant during this project?_
 
 _What were the downsides, limitations, or challenges when relying on AI during this project?_
 
-- _(Downside 1)_
+- Even when given explicit instructions, some AI assistants would ignore the instructions and do whatever they wanted to do.
 - _(Downside 2)_
 - _(Downside 3)_
