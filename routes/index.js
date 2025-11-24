@@ -57,4 +57,105 @@ router.get('/books/new', function(req, res, next) {
   });
 });
 
+/* POST create new book. */
+router.post('/books/new', async function(req, res, next) {
+  try {
+    const bookData = {
+      title: req.body.title,
+      author: req.body.author,
+      genre: req.body.genre || null,
+      first_published: req.body.first_published ? parseInt(req.body.first_published) : null
+    };
+
+    const book = Book.build(bookData);
+    
+    // Validate the book
+    await book.validate();
+
+    // If validation passes, save to database
+    await book.save();
+    
+    // Redirect to all books page
+    res.redirect('/books');
+  } catch (error) {
+    // Handle validation errors
+    if (error.name === 'SequelizeValidationError') {
+      const errors = error.errors.map(err => err.message);
+      res.render('new_book', {
+        book: req.body,
+        errors: errors
+      });
+    } else {
+      next(error);
+    }
+  }
+});
+
+/* GET book detail/update form. */
+router.get('/books/:id', async function(req, res, next) {
+  try {
+    const book = await Book.findByPk(req.params.id);
+    
+    if (!book) {
+      const err = new Error('Book not found');
+      err.status = 404;
+      return next(err);
+    }
+    
+    res.render('update_book', {
+      book: book,
+      errors: []
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/* POST update book. */
+router.post('/books/:id', async function(req, res, next) {
+  try {
+    const book = await Book.findByPk(req.params.id);
+    
+    if (!book) {
+      const err = new Error('Book not found');
+      err.status = 404;
+      return next(err);
+    }
+
+    // Update book properties
+    book.title = req.body.title;
+    book.author = req.body.author;
+    book.genre = req.body.genre || null;
+    book.first_published = req.body.first_published ? parseInt(req.body.first_published) : null;
+    
+    // Validate the book
+    await book.validate();
+
+    // If validation passes, save to database
+    await book.save();
+    
+    // Redirect to all books page
+    res.redirect('/books');
+  } catch (error) {
+    // Handle validation errors
+    if (error.name === 'SequelizeValidationError') {
+      const errors = error.errors.map(err => err.message);
+      // Re-fetch the book to ensure we have the original data structure
+      const book = await Book.findByPk(req.params.id);
+      res.render('update_book', {
+        book: {
+          id: book.id,
+          title: req.body.title,
+          author: req.body.author,
+          genre: req.body.genre || null,
+          first_published: req.body.first_published || null
+        },
+        errors: errors
+      });
+    } else {
+      next(error);
+    }
+  }
+});
+
 module.exports = router;
