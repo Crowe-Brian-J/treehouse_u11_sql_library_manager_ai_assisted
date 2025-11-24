@@ -11,7 +11,7 @@
 
 _List all the AI tools you utilized to complete the project._
 
-- _(AI Tool One)_
+- GitHub Copilot
 - _(AI Tool Two)_
 - _(AI Tool Three)_
 
