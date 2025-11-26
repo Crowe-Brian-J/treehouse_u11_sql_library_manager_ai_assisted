@@ -116,12 +116,21 @@ router.post('/patrons/new', async (req, res, next) => {
 // GET patron edit form
 router.get('/patrons/:id', async (req, res, next) => {
   try {
-    const patron = await Patron.findByPk(req.params.id)
+    const patron = await Patron.findByPk(req.params.id, {
+      include: [
+        { model: Loan, include: [{ model: Book, attributes: ['id', 'title'] }] }
+      ]
+    })
 
     if (!patron) {
       const error = new Error('Patron not found')
       error.status = 404
       return next(error)
+    }
+
+    // Ensure loans are ordered newest-first for the UI
+    if (patron.Loans && patron.Loans.length) {
+      patron.Loans.sort((a, b) => (a.loaned_on < b.loaned_on ? 1 : -1))
     }
 
     res.render('update_patron', {

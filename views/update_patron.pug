@@ -53,25 +53,33 @@ block content
       )
     p
       input(type='submit', value='Update')
-
-  //- Loan history section can be added here later
-  //- h2 Loan History
-  //- table
-  //-   thead
-  //-     tr
-  //-       th Book
-  //-       th Loaned On
-  //-       th Return By
-  //-       th Returned On
-  //-       th Action
-  //-   tbody
-  //-     each loan in patron.Loans
-  //-       tr
-  //-         td
-  //-           a(href=`/books/${loan.Book.id}`)= loan.Book.title
-  //-         td= loan.loaned_on
-  //-         td= loan.return_by
-  //-         td= loan.returned_on || 'Not returned'
-  //-         td
-  //-           if !loan.returned_on
-  //-             a.button(href=`/loans/${loan.id}/return`) Return Book
+    // Loan history
+    h2 Loan History
+    table
+      thead
+        tr
+          th Book
+          th Loaned On
+          th Return By
+          th Returned On
+          th Action
+      tbody
+        if patron.Loans && patron.Loans.length
+          each loan in patron.Loans
+            tr
+              td
+                if loan.Book
+                  a(href=`/books/${loan.Book.id}`)= loan.Book.title
+                else
+                  | (book removed)
+              td= loan.loaned_on || ''
+              td= loan.return_by || ''
+              td= loan.returned_on || 'Not returned'
+              td
+                if !loan.returned_on
+                  a.button(href=`/loans/${loan.id}/return`) Return Book
+                else
+                  | 
+        else
+          tr
+            td(colspan='5') No results found.
