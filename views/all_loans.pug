@@ -7,16 +7,16 @@ block content
   .create-search-container
     a.button(href='/loans/new') Create New Loan
     form(method='get' action='/loans')
-      input(type='search' id='search' name='search' placeholder='Search...' value=(typeof pagination !== 'undefined' && pagination.searchQuery ? pagination.searchQuery : ''))
+      input(type='search' id='search' name='search' placeholder='Search...' value=(pagination && pagination.searchQuery ? pagination.searchQuery : ''))
       button.search-btn(type='submit') Search
 
   p.filters
     strong Filters: 
     a(href='/loans') All
     |  |
-    a(href='/loans?filter=overdue') Overdue
+    a(href='/loans/overdue') Overdue
     |  |
-    a(href='/loans?filter=active') Active
+    a(href='/loans/active') Active
 
   table
     thead
@@ -51,7 +51,7 @@ block content
                 | 
       else
         tr
-          td(colspan='6') No loans found.
+          td(colspan='6') No results found.
 
   if pagination
     nav.pagination
