@@ -11,58 +11,72 @@ block content
       button.search-btn(type='submit') Search
 
   p.filters
-    strong Filters: 
-    a(href='/loans') All
-    |  |
-    a(href='/loans/overdue') Overdue
-    |  |
-    a(href='/loans/active') Current
-
-  table
-    thead
-      tr
-        th Book
-        th Patron
-        th Loaned on
-        th Return by
-        th Returned on
-        th Action
-    tbody
-      if loans && loans.length
-        each loan in loans
-          tr
-            td
-              if loan.Book
-                a(href=`/books/${loan.Book.id}`)= loan.Book.title
-              else
-                | (book removed)
-            td
-              if loan.Patron
-                a(href=`/patrons/${loan.Patron.id}`)= `${loan.Patron.first_name} ${loan.Patron.last_name}`
-              else
-                | (patron removed)
-            td= loan.loaned_on || ''
-            td= loan.return_by || ''
-            td= loan.returned_on || ''
-            td
-              if !loan.returned_on
-                a.button(href=`/loans/${loan.id}/return`) Return Book
-              else
-                | 
+    strong Filters:
+    span.filter-list
+      if currentPath === '/loans'
+        span.active-filter All
       else
-        tr
-          td(colspan='6') No results found.
+        a(href='/loans') All
+      if currentPath === '/loans/overdue'
+        span.active-filter Overdue
+      else
+        a(href='/loans/overdue') Overdue
+      if currentPath === '/loans/active'
+        span.active-filter Active
+      else
+        a(href='/loans/active') Active
 
-  if pagination
-    nav.pagination
-      ul
-        if pagination.currentPage > 1
-          li
-            a(href=`?page=${pagination.currentPage - 1}${pagination.searchQuery ? `&search=${pagination.searchQuery}` : ''}`) Previous
-        - var total = pagination.totalPages
-        - for (var p = 1; p <= total; p++)
-          li(class=(p === pagination.currentPage ? 'active' : ''))
-            a(href=`?page=${p}${pagination.searchQuery ? `&search=${pagination.searchQuery}` : ''}`)= p
-        if pagination.currentPage < pagination.totalPages
-          li
-            a(href=`?page=${pagination.currentPage + 1}${pagination.searchQuery ? `&search=${pagination.searchQuery}` : ''}`) Next
+  .loan-listing
+    table
+      thead
+        tr
+          th Book
+          th Patron
+          th Loaned on
+          th Return by
+          th Returned on
+          th Action
+      tbody
+        if loans && loans.length
+          each loan in loans
+            tr
+              td
+                if loan.Book
+                  a(href=`/books/${loan.Book.id}`)= loan.Book.title
+                else
+                  | (book removed)
+              td
+                if loan.Patron
+                  a(href=`/patrons/${loan.Patron.id}`)= `${loan.Patron.first_name} ${loan.Patron.last_name}`
+                else
+                  | (patron removed)
+              - var formatShort = (d) => {
+              -   if (!d) return ''
+              -   const parts = d.split('-')
+              -   return `${parts[1]}/${parts[2]}/${parts[0].slice(2)}`
+              - }
+              td= formatShort(loan.loaned_on)
+              td= formatShort(loan.return_by)
+              td= formatShort(loan.returned_on)
+              td
+                if !loan.returned_on
+                  a.button(href=`/loans/${loan.id}/return`) Return Book
+                else
+                  | 
+        else
+          tr
+            td(colspan='6') No results found.
+
+    if pagination
+      nav.pagination
+        ul
+          if pagination.currentPage > 1
+            li
+              a(href=`?page=${pagination.currentPage - 1}${pagination.searchQuery ? `&search=${pagination.searchQuery}` : ''}`) Previous
+          - var total = pagination.totalPages
+          - for (var p = 1; p <= total; p++)
+            li(class=(p === pagination.currentPage ? 'active' : ''))
+              a(href=`?page=${p}${pagination.searchQuery ? `&search=${pagination.searchQuery}` : ''}`)= p
+          if pagination.currentPage < pagination.totalPages
+            li
+              a(href=`?page=${pagination.currentPage + 1}${pagination.searchQuery ? `&search=${pagination.searchQuery}` : ''}`) Next

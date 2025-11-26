@@ -73,12 +73,12 @@ nav ul li {
 }
 
 nav ul li:after,
-.filters a:after {
+.filters .filter-list > *:after {
   content: " | ";
 }
 
 nav ul li:last-child:after,
-.filters a:last-child:after {
+.filters .filter-list > *:last-child:after {
   content: none;
 }
 
@@ -151,9 +151,50 @@ select {
   margin-bottom: 1rem;
 }
 
+/* Loan listing: enforce consistent column widths and ellipsis */
+.loan-listing table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+
+.loan-listing th {
+  padding: 8px 12px;
+  /* allow header labels to wrap when needed */
+  white-space: normal;
+}
+
+.loan-listing td {
+  padding: 8px 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* keep table cells compact and prevent wrapping */
+  white-space: nowrap;
+}
+
+.loan-listing th:nth-child(1),
+.loan-listing td:nth-child(1) { width: 44%; }
+.loan-listing th:nth-child(2),
+.loan-listing td:nth-child(2) { width: 20%; }
+.loan-listing th:nth-child(3),
+.loan-listing td:nth-child(3) { width: 8%; text-align: center; }
+.loan-listing th:nth-child(4),
+.loan-listing td:nth-child(4) { width: 8%; text-align: center; }
+.loan-listing th:nth-child(5),
+.loan-listing td:nth-child(5) { width: 8%; text-align: center; }
+.loan-listing th:nth-child(6),
+.loan-listing td:nth-child(6) { width: 12%; text-align: center; }
+
 li.active a {
   text-decoration: underline;
   color: #cc9446;
+}
+
+.filters .filter-list .active-filter {
+  color: black;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: default;
 }
 
 h2.error,
@@ -187,4 +228,27 @@ input:focus,
 select:focus {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
+}
+
+/* Responsive tweaks: prevent Action button from being clipped on narrow screens */
+@media (max-width: 640px) {
+  .loan-listing table {
+    table-layout: auto;
+  }
+
+  /* Give the Action column more room on small screens */
+  .loan-listing th:nth-child(1), .loan-listing td:nth-child(1) { width: 45%; }
+  .loan-listing th:nth-child(2), .loan-listing td:nth-child(2) { width: 25%; }
+  .loan-listing th:nth-child(6), .loan-listing td:nth-child(6) { width: 20%; }
+
+  /* Allow the action button to wrap to a second line and reduce padding/font slightly */
+  .loan-listing td .button {
+    white-space: normal;
+    padding: 6px 8px;
+    font-size: 13px;
+    display: inline-block;
+  }
+
+  /* Ensure pagination doesn't overflow */
+  nav.pagination ul { flex-wrap: wrap; }
 }
