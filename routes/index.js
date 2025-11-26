@@ -156,13 +156,41 @@ router.get('/patrons', async function (req, res, next) {
 
     let whereClause = {}
     if (search) {
+      // Handle library_id search - strip "MCL" prefix if present and convert to number
+      let libraryIdSearch = null
+      const searchUpper = search.toUpperCase().trim()
+      
+      if (searchUpper.startsWith('MCL')) {
+        // Remove "MCL" prefix and try to parse as number
+        const numericPart = searchUpper.replace(/^MCL/, '').trim()
+        const parsedId = parseInt(numericPart)
+        if (!isNaN(parsedId)) {
+          libraryIdSearch = parsedId
+        }
+      } else {
+        // Try to parse the entire search as a number for library_id
+        const parsedId = parseInt(search.trim())
+        if (!isNaN(parsedId) && parsedId.toString() === search.trim()) {
+          libraryIdSearch = parsedId
+        }
+      }
+      
+      // Build search conditions
+      const searchConditions = [
+        { first_name: { [Op.like]: `%${search}%` } },
+        { last_name: { [Op.like]: `%${search}%` } },
+        { email: { [Op.like]: `%${search}%` } },
+        { address: { [Op.like]: `%${search}%` } },
+        { zip_code: { [Op.like]: `%${search}%` } }
+      ]
+      
+      // Add library_id search if we found a valid number
+      if (libraryIdSearch !== null) {
+        searchConditions.push({ library_id: libraryIdSearch })
+      }
+      
       whereClause = {
-        [Op.or]: [
-          { first_name: { [Op.like]: `%${search}%` } },
-          { last_name: { [Op.like]: `%${search}%` } },
-          { email: { [Op.like]: `%${search}%` } },
-          { library_id: { [Op.like]: `%${search}%` } }
-        ]
+        [Op.or]: searchConditions
       }
     }
 
@@ -204,12 +232,29 @@ router.get('/books', async function (req, res, next) {
 
     let whereClause = {}
     if (search) {
-      whereClause = {
-        [Op.or]: [
-          { title: { [Op.like]: `%${search}%` } },
-          { author: { [Op.like]: `%${search}%` } },
-          { genre: { [Op.like]: `%${search}%` } }
-        ]
+      // Try to parse as integer for first_published search
+      const searchInt = parseInt(search)
+      const isNumeric = !isNaN(searchInt) && searchInt.toString() === search.trim()
+      
+      if (isNumeric) {
+        // If search is numeric, search in first_published as exact match
+        whereClause = {
+          [Op.or]: [
+            { title: { [Op.like]: `%${search}%` } },
+            { author: { [Op.like]: `%${search}%` } },
+            { genre: { [Op.like]: `%${search}%` } },
+            { first_published: searchInt }
+          ]
+        }
+      } else {
+        // If search is not numeric, search in text fields only
+        whereClause = {
+          [Op.or]: [
+            { title: { [Op.like]: `%${search}%` } },
+            { author: { [Op.like]: `%${search}%` } },
+            { genre: { [Op.like]: `%${search}%` } }
+          ]
+        }
       }
     }
 

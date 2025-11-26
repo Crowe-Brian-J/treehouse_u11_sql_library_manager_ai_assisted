@@ -160,3 +160,31 @@ h2.error,
 ul.error li {
   color: var(--color-error);
 }
+
+/* Screen reader only - visually hidden but accessible to assistive technologies */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Ensure buttons are keyboard accessible */
+button:focus,
+input[type="submit"]:focus,
+a.button:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Ensure form inputs are keyboard accessible */
+input:focus,
+select:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}

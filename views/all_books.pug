@@ -5,7 +5,8 @@ block content
   div.create-search-container
     a.button(href='/books/new') Create New Book
     form(method='get')
-      input(type='search', id='search', name='search', placeholder='Search...')
+      label(for='search', class='sr-only') Search books
+      input(type='search', id='search', name='search', placeholder='Search...', aria-label='Search books by title, author, genre, or year')
       button(type='submit', class='search-btn') Search
   table
     thead

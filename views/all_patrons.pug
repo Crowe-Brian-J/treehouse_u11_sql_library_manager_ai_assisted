@@ -5,7 +5,8 @@ block content
   .create-search-container
     a.button(href="/patrons/new") Create New Patron
     form(method="get")
-      input(type="search" id="search" name="search" placeholder="Search...")
+      label(for="search", class="sr-only") Search patrons
+      input(type="search", id="search", name="search", placeholder="Search...", aria-label="Search patrons by name, email, address, zip code, or library ID (e.g., MCL1234)")
       button.search-btn(type="submit") Search
   
   table
