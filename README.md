@@ -31,7 +31,7 @@ _Describe what parts of the project went smoothly or turned out well. This could
 
 _Explain what parts of the project were challenging or didn't go as planned. Did you hit bugs, confusion, or dead ends?_
 
-- _(What Didn't Work 1)_ - 
+- _(What Didn't Work 1)_ - Despite me asking GitHub Copilot to stop suggesting seeding the loan db, it kept requesting to do so.
 - _(What Didn't Work 2)_ - I ran out of credits on Cursor fairly quickly. Kind of wish I didn't do that.
 - _(What Didn't Work 3)_ - Windsurf kept attempting to change the database schema in unexpected ways, sometimes suggesting changes that weren't aligned with the project requirements. It also tried to enforce conventions that didn't match the project's existing patterns. It also chose to add multiple form instructions in ways that did not make sense for the project's existing structure.
 
@@ -45,7 +45,7 @@ _What were the benefits of using an AI assistant during this project?_
 
 - _(Benefit 1)_ - As long as I wrote the prompt well, it was easy to discern what, if any, changes needed to be made to the code the assistant created.
 - _(Benefit 2)_ - I could prompt the AI assistant and start writing the next prompt while it was coding. While I sometimes had to react to problems, this greatly sped up the process.
-- _(Benefit 3)_ - 
+- _(Benefit 3)_ -  
 
 ### Cons
 

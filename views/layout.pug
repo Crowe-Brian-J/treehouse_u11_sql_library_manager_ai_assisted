@@ -9,10 +9,10 @@ html
     header
       nav(role='navigation' aria-label='Main')
         ul
-          li: a(href='/') Home
-          li: a(href='/books') Books
-          li: a(href='/patrons') Patrons
-          li: a(href='/loans') Loans
+          li(class=(currentPath === '/' ? 'active' : '')): a(href='/') Home
+          li(class=(currentPath.indexOf('/books') === 0 ? 'active' : '')): a(href='/books') Books
+          li(class=(currentPath.indexOf('/patrons') === 0 ? 'active' : '')): a(href='/patrons') Patrons
+          li(class=(currentPath.indexOf('/loans') === 0 ? 'active' : '')): a(href='/loans') Loans
     main
       block content
     footer

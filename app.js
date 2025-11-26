@@ -28,19 +28,26 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 
 // Method override for PUT/PATCH/DELETE via POST forms
-app.use(methodOverride((req, res) => {
-  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
-    const method = req.body._method
-    delete req.body._method
-    return method
-  }
-}))
+app.use(
+  methodOverride((req, res) => {
+    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+      const method = req.body._method
+      delete req.body._method
+      return method
+    }
+  })
+)
 
 app.use(express.static(path.join(__dirname, 'public')))
 
 // ============================================================================
 // Routes
 // ============================================================================
+// expose current path to views for active nav highlighting
+app.use((req, res, next) => {
+  res.locals.currentPath = req.path
+  next()
+})
 
 app.use('/', indexRouter)
 app.use('/users', usersRouter)
@@ -48,12 +55,13 @@ app.use('/users', usersRouter)
 // ============================================================================
 // Database Connection
 // ============================================================================
-
 ;(async () => {
   try {
     await sequelize.sync()
     await sequelize.authenticate()
-    console.log('Database connection established successfully and models are synced.')
+    console.log(
+      'Database connection established successfully and models are synced.'
+    )
   } catch (error) {
     console.error('Unable to connect to the database:', error)
   }
