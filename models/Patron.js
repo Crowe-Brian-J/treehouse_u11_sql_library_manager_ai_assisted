@@ -1,3 +1,7 @@
+/**
+ * Patron model
+ * Fields: id, first_name, last_name, address, email, library_id, zip_code
+ */
 module.exports = (sequelize, DataTypes) => {
   const Patron = sequelize.define(
     'Patron',
@@ -101,5 +105,11 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     }
   )
+
+  // Associate: a Patron has many Loans (foreign key: patron_id)
+  Patron.associate = function (models) {
+    Patron.hasMany(models.Loan, { foreignKey: 'patron_id' })
+  }
+
   return Patron
 }

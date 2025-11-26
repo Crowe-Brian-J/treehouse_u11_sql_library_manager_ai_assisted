@@ -1,3 +1,7 @@
+/**
+ * Book model
+ * Fields: id, title, author, genre, first_published
+ */
 module.exports = (sequelize, DataTypes) => {
   const Book = sequelize.define(
     'Book',
@@ -36,5 +40,11 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     }
   )
+
+  // Associate: a Book has many Loans (foreign key: book_id)
+  Book.associate = function (models) {
+    Book.hasMany(models.Loan, { foreignKey: 'book_id' })
+  }
+
   return Book
 }

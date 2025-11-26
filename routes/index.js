@@ -1,3 +1,10 @@
+/**
+ * Main application routes
+ *
+ * This file contains the primary UI routes for the sample Library Manager
+ * application: a simple set of pages and CRUD handlers for `Book` and
+ * `Patron` models. It uses the Sequelize models exported from `models/index.js`.
+ */
 const express = require('express')
 const router = express.Router()
 const { Book, Patron } = require('../models')
@@ -23,18 +30,18 @@ function formatValidationErrors(error) {
 // Helper function to extract library ID from search term (handles "MCL" prefix)
 function extractLibraryId(searchTerm) {
   const searchUpper = searchTerm.toUpperCase().trim()
-  
+
   if (searchUpper.startsWith('MCL')) {
     const numericPart = searchUpper.replace(/^MCL/, '').trim()
     const parsedId = parseInt(numericPart)
     return !isNaN(parsedId) ? parsedId : null
   }
-  
+
   const parsedId = parseInt(searchTerm.trim())
   if (!isNaN(parsedId) && parsedId.toString() === searchTerm.trim()) {
     return parsedId
   }
-  
+
   return null
 }
 
@@ -156,7 +163,9 @@ router.put('/patrons/:id', async (req, res, next) => {
       return res.render('update_patron', {
         patron: { ...req.body, id: req.params.id },
         errors: formatValidationErrors(error),
-        title: `Update Patron: ${req.body.first_name || ''} ${req.body.last_name || ''}`
+        title: `Update Patron: ${req.body.first_name || ''} ${
+          req.body.last_name || ''
+        }`
       })
     }
 
@@ -224,7 +233,8 @@ router.get('/books', async (req, res, next) => {
     let whereClause = {}
     if (search) {
       const searchInt = parseInt(search)
-      const isNumeric = !isNaN(searchInt) && searchInt.toString() === search.trim()
+      const isNumeric =
+        !isNaN(searchInt) && searchInt.toString() === search.trim()
 
       const searchConditions = [
         { title: { [Op.like]: `%${search}%` } },
@@ -356,4 +366,5 @@ router.put('/books/:id', async (req, res, next) => {
   }
 })
 
+// Export the configured router with all routes defined above
 module.exports = router
