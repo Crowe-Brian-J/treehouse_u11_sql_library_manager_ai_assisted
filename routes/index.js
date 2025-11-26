@@ -7,7 +7,7 @@
  */
 const express = require('express')
 const router = express.Router()
-const { Book, Patron } = require('../models')
+const { Book, Patron, Loan } = require('../models')
 const { Op } = require('sequelize')
 
 // Constants
@@ -317,6 +317,56 @@ router.get('/books/:id', async (req, res, next) => {
     res.render('update_book', {
       book: book,
       errors: []
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// ============================================================================
+// Loan Routes
+// ============================================================================
+
+// GET all loans
+router.get('/loans', async (req, res, next) => {
+  try {
+    const search = req.query.search || ''
+    const page = parseInt(req.query.page) || 1
+    const offset = (page - 1) * ITEMS_PER_PAGE
+
+    let whereClause = {}
+    if (search) {
+      const libraryId = extractLibraryId(search)
+      const searchConditions = [
+        { '$Book.title$': { [Op.like]: `%${search}%` } },
+        { '$Patron.first_name$': { [Op.like]: `%${search}%` } },
+        { '$Patron.last_name$': { [Op.like]: `%${search}%` } }
+      ]
+
+      if (libraryId !== null) {
+        searchConditions.push({ '$Patron.library_id$': libraryId })
+      }
+
+      whereClause = { [Op.or]: searchConditions }
+    }
+
+    const { count, rows: loans } = await Loan.findAndCountAll({
+      where: whereClause,
+      include: [
+        { model: Book, attributes: ['id', 'title'] },
+        {
+          model: Patron,
+          attributes: ['id', 'first_name', 'last_name', 'library_id']
+        }
+      ],
+      limit: ITEMS_PER_PAGE,
+      offset: offset,
+      order: [['loaned_on', 'DESC']]
+    })
+
+    res.render('all_loans', {
+      loans: loans,
+      pagination: buildPagination(count, page, ITEMS_PER_PAGE, search)
     })
   } catch (error) {
     next(error)
