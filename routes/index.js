@@ -373,6 +373,108 @@ router.get('/loans', async (req, res, next) => {
   }
 })
 
+// GET active loans (not yet returned)
+router.get('/loans/active', async (req, res, next) => {
+  try {
+    const search = req.query.search || ''
+    const page = parseInt(req.query.page) || 1
+    const offset = (page - 1) * ITEMS_PER_PAGE
+
+    let whereClause = { returned_on: null }
+
+    if (search) {
+      const libraryId = extractLibraryId(search)
+      const searchConditions = [
+        { '$Book.title$': { [Op.like]: `%${search}%` } },
+        { '$Patron.first_name$': { [Op.like]: `%${search}%` } },
+        { '$Patron.last_name$': { [Op.like]: `%${search}%` } }
+      ]
+
+      if (libraryId !== null) {
+        searchConditions.push({ '$Patron.library_id$': libraryId })
+      }
+
+      whereClause = {
+        [Op.and]: [{ returned_on: null }, { [Op.or]: searchConditions }]
+      }
+    }
+
+    const { count, rows: loans } = await Loan.findAndCountAll({
+      where: whereClause,
+      include: [
+        { model: Book, attributes: ['id', 'title'] },
+        {
+          model: Patron,
+          attributes: ['id', 'first_name', 'last_name', 'library_id']
+        }
+      ],
+      limit: ITEMS_PER_PAGE,
+      offset: offset,
+      order: [['return_by', 'ASC']]
+    })
+
+    res.render('active_loans', {
+      loans: loans,
+      pagination: buildPagination(count, page, ITEMS_PER_PAGE, search)
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// GET overdue loans (return_by before today and not returned)
+router.get('/loans/overdue', async (req, res, next) => {
+  try {
+    const search = req.query.search || ''
+    const page = parseInt(req.query.page) || 1
+    const offset = (page - 1) * ITEMS_PER_PAGE
+
+    const today = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+
+    // Base clause: overdue means return_by < today and returned_on is null
+    let whereClause = {
+      returned_on: null,
+      return_by: { [Op.lt]: today }
+    }
+
+    if (search) {
+      const libraryId = extractLibraryId(search)
+      const searchConditions = [
+        { '$Book.title$': { [Op.like]: `%${search}%` } },
+        { '$Patron.first_name$': { [Op.like]: `%${search}%` } },
+        { '$Patron.last_name$': { [Op.like]: `%${search}%` } }
+      ]
+
+      if (libraryId !== null) {
+        searchConditions.push({ '$Patron.library_id$': libraryId })
+      }
+
+      whereClause = { [Op.and]: [whereClause, { [Op.or]: searchConditions }] }
+    }
+
+    const { count, rows: loans } = await Loan.findAndCountAll({
+      where: whereClause,
+      include: [
+        { model: Book, attributes: ['id', 'title'] },
+        {
+          model: Patron,
+          attributes: ['id', 'first_name', 'last_name', 'library_id']
+        }
+      ],
+      limit: ITEMS_PER_PAGE,
+      offset: offset,
+      order: [['return_by', 'ASC']]
+    })
+
+    res.render('overdue_loans', {
+      loans: loans,
+      pagination: buildPagination(count, page, ITEMS_PER_PAGE, search)
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
 // PUT update book
 router.put('/books/:id', async (req, res, next) => {
   try {
