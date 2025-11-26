@@ -1,5 +1,5 @@
-var express = require('express')
-var router = express.Router()
+const express = require('express')
+const router = express.Router()
 const { Book, Patron } = require('../models')
 const { Op } = require('sequelize')
 
@@ -92,8 +92,8 @@ router.get('/patrons/:id', async function (req, res, next) {
   }
 })
 
-/* POST/PUT update patron */
-router.post('/patrons/:id', async function (req, res, next) {
+/* PUT update patron */
+router.put('/patrons/:id', async function (req, res, next) {
   try {
     const patron = await Patron.findByPk(req.params.id)
 
@@ -302,8 +302,8 @@ router.get('/books/:id', async function (req, res, next) {
   }
 })
 
-/* POST update book. */
-router.post('/books/:id', async function (req, res, next) {
+/* PUT update book. */
+router.put('/books/:id', async function (req, res, next) {
   try {
     const book = await Book.findByPk(req.params.id)
 

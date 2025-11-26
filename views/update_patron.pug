@@ -10,6 +10,7 @@ block content
         li= error.message
   
   form(method='post', action=`/patrons/${patron.id}`)
+    input(type='hidden', name='_method', value='PUT')
     p
       label(for='first_name') First Name
       input#first_name(

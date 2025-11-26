@@ -8,6 +8,7 @@ block content
       each error in errors
         li= error
   form(method='post', action=`/books/${book.id}`)
+    input(type='hidden', name='_method', value='PUT')
     p
       label(for='title') Title
       input#title(type='text', name='title', value=book.title)
