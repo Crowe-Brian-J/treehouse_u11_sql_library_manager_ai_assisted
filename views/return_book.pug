@@ -1,0 +1,32 @@
+extends layout
+
+//- Return book form (based on example-markup/return_book.html)
+block content
+  h1 Return Book
+
+  if loan && loan.Book
+    p
+      strong Book Title: 
+      | 
+      = loan.Book.title
+  if loan && loan.Patron
+    p
+      strong Loaned By: 
+      | 
+      = `${loan.Patron.first_name} ${loan.Patron.last_name}`
+  if loan
+    p
+      strong Loaned On: 
+      | 
+      = loan.loaned_on || ''
+    p
+      strong Return By: 
+      | 
+      = loan.return_by || ''
+
+  form(method='post' action=`/loans/${loan.id}/return`)
+    p
+      label(for='returned_on') Returned on:
+      input#returned_on(type='text' name='returned_on' value=(returned_on || '') readonly)
+    p
+      input(type='submit' value='Return Book')

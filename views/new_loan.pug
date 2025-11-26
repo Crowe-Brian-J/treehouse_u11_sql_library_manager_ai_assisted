@@ -1,0 +1,31 @@
+extends layout
+
+//- New Loan form (based on example-markup/new_loan.html)
+block content
+  h1 New Loan
+
+  if errors && errors.length
+    h2.error Oooops!
+    ul.error
+      each e in errors
+        li= e
+
+  form(method='post' action='/loans/new')
+    p
+      label(for='book_id') Book
+      select(name='book_id' id='book_id')
+        if books && books.length
+          each book in books
+            option(value=book.id)= book.title
+        else
+          option(disabled selected) No available books
+    p
+      label(for='patron_id') Patron
+      select(name='patron_id' id='patron_id')
+        if patrons && patrons.length
+          each patron in patrons
+            option(value=patron.id)= `${patron.library_id} - ${patron.first_name} ${patron.last_name}`
+        else
+          option(disabled selected) No patrons found
+    p
+      input(type='submit' value='Create New Loan')

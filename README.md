@@ -43,14 +43,14 @@ _Explain what parts of the project were challenging or didn't go as planned. Did
 
 _What were the benefits of using an AI assistant during this project?_
 
-- _(Benefit 1)_ - 
-- _(Benefit 2)_ - 
+- _(Benefit 1)_ - As long as I wrote the prompt well, it was easy to discern what, if any, changes needed to be made to the code the assistant created.
+- _(Benefit 2)_ - I could prompt the AI assistant and start writing the next prompt while it was coding. While I sometimes had to react to problems, this greatly sped up the process.
 - _(Benefit 3)_ - 
 
 ### Cons
 
 _What were the downsides, limitations, or challenges when relying on AI during this project?_
 
-- _(Downside 1)_ - Even when given explicit instructions, some AI assistants would ignore the instructions and do whatever they wanted to do.
+- _(Downside 1)_ - Even when given explicit instructions, some AI  assistants would ignore the instructions and do whatever they wanted to do.
 - _(Downside 2)_ - 
 - _(Downside 3)_ - 

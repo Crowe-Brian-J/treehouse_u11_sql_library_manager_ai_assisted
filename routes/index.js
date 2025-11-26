@@ -422,6 +422,35 @@ router.get('/loans/active', async (req, res, next) => {
   }
 })
 
+// GET new loan form
+router.get('/loans/new', async (req, res, next) => {
+  try {
+    // Books not currently checked out: no Loan with returned_on === null
+    // We'll find all books whose id is NOT in the set of active loans' book_id
+    const activeLoans = await Loan.findAll({
+      where: { returned_on: null },
+      attributes: ['book_id']
+    })
+
+    const activeBookIds = activeLoans.map((l) => l.book_id)
+
+    const availableBooks = await Book.findAll({
+      where: activeBookIds.length ? { id: { [Op.notIn]: activeBookIds } } : {},
+      order: [['title', 'ASC']]
+    })
+
+    const patrons = await Patron.findAll({ order: [['library_id', 'ASC']] })
+
+    res.render('new_loan', {
+      books: availableBooks,
+      patrons: patrons,
+      errors: []
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
 // GET overdue loans (return_by before today and not returned)
 router.get('/loans/overdue', async (req, res, next) => {
   try {
@@ -445,6 +474,109 @@ router.get('/loans/overdue', async (req, res, next) => {
         { '$Patron.last_name$': { [Op.like]: `%${search}%` } }
       ]
 
+      router.post('/loans/new', async (req, res, next) => {
+        try {
+          const bookId = parseInt(req.body.book_id)
+          const patronId = parseInt(req.body.patron_id)
+
+          const errors = []
+
+          if (isNaN(bookId)) {
+            errors.push('Please select a book.')
+          }
+          if (isNaN(patronId)) {
+            errors.push('Please select a patron.')
+          }
+
+          // Verify selected records exist
+          let book = null
+          let patron = null
+          if (!isNaN(bookId)) {
+            book = await Book.findByPk(bookId)
+            if (!book) errors.push('Selected book not found.')
+          }
+          if (!isNaN(patronId)) {
+            patron = await Patron.findByPk(patronId)
+            if (!patron) errors.push('Selected patron not found.')
+          }
+
+          // Ensure book is not currently checked out
+          if (book) {
+            const active = await Loan.findOne({
+              where: { book_id: bookId, returned_on: null }
+            })
+            if (active) errors.push('Selected book is already checked out.')
+          }
+
+          if (errors.length) {
+            // re-fetch lists for the form
+            const activeLoans = await Loan.findAll({
+              where: { returned_on: null },
+              attributes: ['book_id']
+            })
+            const activeBookIds = activeLoans.map((l) => l.book_id)
+            const availableBooks = await Book.findAll({
+              where: activeBookIds.length
+                ? { id: { [Op.notIn]: activeBookIds } }
+                : {},
+              order: [['title', 'ASC']]
+            })
+            const patrons = await Patron.findAll({
+              order: [['library_id', 'ASC']]
+            })
+
+            return res.render('new_loan', {
+              books: availableBooks,
+              patrons: patrons,
+              errors: errors
+            })
+          }
+
+          // set loaned_on = today, return_by = today + 7 days
+          const today = new Date()
+          const loanedOn = today.toISOString().slice(0, 10)
+          const returnByDate = new Date(today)
+          returnByDate.setDate(returnByDate.getDate() + 7)
+          const returnBy = returnByDate.toISOString().slice(0, 10)
+
+          await Loan.create({
+            book_id: bookId,
+            patron_id: patronId,
+            loaned_on: loanedOn,
+            return_by: returnBy,
+            returned_on: null
+          })
+
+          res.redirect('/loans')
+        } catch (error) {
+          if (error.name === 'SequelizeValidationError') {
+            // map validation messages
+            const messages = error.errors.map((e) => e.message)
+            // re-render form with messages
+            const activeLoans = await Loan.findAll({
+              where: { returned_on: null },
+              attributes: ['book_id']
+            })
+            const activeBookIds = activeLoans.map((l) => l.book_id)
+            const availableBooks = await Book.findAll({
+              where: activeBookIds.length
+                ? { id: { [Op.notIn]: activeBookIds } }
+                : {},
+              order: [['title', 'ASC']]
+            })
+            const patrons = await Patron.findAll({
+              order: [['library_id', 'ASC']]
+            })
+
+            return res.render('new_loan', {
+              books: availableBooks,
+              patrons: patrons,
+              errors: messages
+            })
+          }
+          next(error)
+        }
+      })
       if (libraryId !== null) {
         searchConditions.push({ '$Patron.library_id$': libraryId })
       }
@@ -470,6 +602,57 @@ router.get('/loans/overdue', async (req, res, next) => {
       loans: loans,
       pagination: buildPagination(count, page, ITEMS_PER_PAGE, search)
     })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// GET return form for a loan
+router.get('/loans/:id/return', async (req, res, next) => {
+  try {
+    const loan = await Loan.findByPk(req.params.id, {
+      include: [
+        { model: Book, attributes: ['id', 'title'] },
+        {
+          model: Patron,
+          attributes: ['id', 'first_name', 'last_name', 'library_id']
+        }
+      ]
+    })
+
+    if (!loan) {
+      const error = new Error('Loan not found')
+      error.status = 404
+      return next(error)
+    }
+
+    const today = new Date().toISOString().slice(0, 10)
+
+    res.render('return_book', {
+      loan: loan,
+      returned_on: today
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// POST return a loan (set returned_on to today)
+router.post('/loans/:id/return', async (req, res, next) => {
+  try {
+    const loan = await Loan.findByPk(req.params.id)
+
+    if (!loan) {
+      const error = new Error('Loan not found')
+      error.status = 404
+      return next(error)
+    }
+
+    const today = new Date().toISOString().slice(0, 10)
+
+    await loan.update({ returned_on: today })
+
+    res.redirect('/loans')
   } catch (error) {
     next(error)
   }
