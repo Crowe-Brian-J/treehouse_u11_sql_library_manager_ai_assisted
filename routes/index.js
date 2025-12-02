@@ -57,6 +57,14 @@ function buildPagination(count, page, limit, search) {
     : null
 }
 
+// Helper to format a Date object as a local YYYY-MM-DD string (avoids UTC shifts)
+function formatLocalDate(d) {
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 // ============================================================================
 // Home Route
 // ============================================================================
@@ -517,12 +525,12 @@ router.post('/loans/new', async (req, res, next) => {
       })
     }
 
-    // set loaned_on = today, return_by = today + 7 days
+    // set loaned_on = today, return_by = today + 7 days (use local date)
     const today = new Date()
-    const loanedOn = today.toISOString().slice(0, 10)
+    const loanedOn = formatLocalDate(today)
     const returnByDate = new Date(today)
     returnByDate.setDate(returnByDate.getDate() + 7)
-    const returnBy = returnByDate.toISOString().slice(0, 10)
+    const returnBy = formatLocalDate(returnByDate)
 
     await Loan.create({
       book_id: bookId,
@@ -568,7 +576,7 @@ router.get('/loans/overdue', async (req, res, next) => {
     const page = parseInt(req.query.page) || 1
     const offset = (page - 1) * ITEMS_PER_PAGE
 
-    const today = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+    const today = formatLocalDate(new Date()) // YYYY-MM-DD (local)
 
     // Base clause: overdue means return_by < today and returned_on is null
     let whereClause = {
@@ -633,7 +641,7 @@ router.get('/loans/:id/return', async (req, res, next) => {
       return next(error)
     }
 
-    const today = new Date().toISOString().slice(0, 10)
+    const today = formatLocalDate(new Date())
 
     res.render('return_book', {
       loan: loan,
@@ -655,7 +663,7 @@ router.post('/loans/:id/return', async (req, res, next) => {
       return next(error)
     }
 
-    const today = new Date().toISOString().slice(0, 10)
+    const today = formatLocalDate(new Date())
 
     await loan.update({ returned_on: today })
 

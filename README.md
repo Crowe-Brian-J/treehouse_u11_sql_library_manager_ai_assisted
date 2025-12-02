@@ -52,5 +52,5 @@ _What were the benefits of using an AI assistant during this project?_
 _What were the downsides, limitations, or challenges when relying on AI during this project?_
 
 - _(Downside 1)_ - Even when given explicit instructions, some AI  assistants would ignore the instructions and do whatever they wanted to do.
-- _(Downside 2)_ - Because I'm not the one writing the code, I don't know what it says until I read it. In reality the code could be doing anything and I wouldn't know what it does until the assistant was finished. Having the assistant write long blocks of code, which really saves time, meant I had more code to look at before I could determine everything was in good working order.
+- _(Downside 2)_ - Because I'm not the one writing the code, I don't know what it says until I read it. In reality the code could be doing anything and I wouldn't know what it does until the assistant was finished. Having the assistant write long blocks of code, which really saves time, meant I had more code to look at before I could determine everything was in good working order, which really doesn't save time.
 - _(Downside 3)_ - 
