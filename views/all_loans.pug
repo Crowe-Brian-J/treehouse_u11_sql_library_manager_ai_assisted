@@ -32,9 +32,18 @@ block content
         tr
           th Book
           th Patron
-          th Loaned on
-          th Return by
-          th Returned on
+          th
+            | Loaned
+            br
+            | on
+          th
+            | Return
+            br
+            | by
+          th
+            | Returned
+            br
+            | on
           th Action
       tbody
         if loans && loans.length
